@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EnhancedIMGUI
 {
-    [DefaultExecutionOrder(-999)]
+    [DefaultExecutionOrder(-667)]
     public class EnhancedGUIManager : MonoBehaviour
     {
         [Header("Resources ")]
@@ -22,22 +22,25 @@ namespace EnhancedIMGUI
             Instance = this;
         }
 
-        private void OnGUI()
+        // private void OnGUI() => DebugDraw();
+        private void DebugDraw()
         {
-            /*
             GUILayout.Space(25);
-            GUILayout.Label($"Index: {ImGui.WindowsIndex}");
-            GUILayout.Label($"Windows: {ImGui.Windows.Length}");
-            for (var index = 0; index < ImGui.Windows.Length; index++)
+            GUILayout.Label($"Renderers: {EnhancedGUIRenderer.Renderers.Count}");
+            foreach (var r in EnhancedGUIRenderer.Renderers)
             {
-                var p = ImGui.Windows[index];
-                GUILayout.Label($"- #{index}: ");
-                GUILayout.Label($" \t- Position:\t{p.Rect.ToString()}");
-                GUILayout.Label($" \t- GUID:\t{p.Guid}");
-                GUILayout.Label($" \t- Depth:\t{p.Depth}");
+                GUILayout.Label($"Renderer: {r.name}");
+                GUILayout.Label($"\tIndex: {r.WindowsIndex}");
+                GUILayout.Label($"\tWindows: {r.Windows.Length}");
+                for (var index = 0; index < r.Windows.Length; index++)
+                {
+                    var p = r.Windows[index];
+                    GUILayout.Label($"\t- #{index}: ");
+                    GUILayout.Label($" \t\t- Position:\t{p.Rect.ToString()}");
+                    GUILayout.Label($" \t\t- GUID:\t{p.Guid}");
+                    GUILayout.Label($" \t\t- Depth:\t{p.Depth}");
+                }
             }
-            */
-            //ImGui.EndWindows();
         }
 
         internal static EnhancedGUIManager Instance { get; private set; }
