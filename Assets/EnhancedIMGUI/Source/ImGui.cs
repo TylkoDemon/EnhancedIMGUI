@@ -212,7 +212,7 @@ namespace EnhancedIMGUI
         public static bool Button(string str)
         {
             CheckControlDraw();
-            var controlId = GetControlID(nameof(FloatField));
+            var controlId = GetControlID(nameof(Button));
 
             GUI.SetNextControlName(controlId.ToString());
             if (DrawControlId)
@@ -223,13 +223,19 @@ namespace EnhancedIMGUI
         public static void Toggle(string label, ref bool b)
         {
             CheckControlDraw();
-            b = GUILayout.Toggle(b, label);
+            var controlId = GetControlID(nameof(Toggle));
+            GUILayout.BeginHorizontal();
+
+            GUI.SetNextControlName(controlId.ToString());
+            b = GUILayout.Toggle(b, string.Empty);
+            ControlLabel(label, controlId);
+            GUILayout.EndHorizontal();
         }
 
         public static void InputText(string label, ref string input)
         {
             CheckControlDraw();
-            var controlId = GetControlID(nameof(FloatField));
+            var controlId = GetControlID(nameof(InputText));
             GUILayout.BeginHorizontal();
 
             GUI.SetNextControlName(controlId.ToString());
@@ -238,36 +244,31 @@ namespace EnhancedIMGUI
             GUILayout.EndHorizontal();
         }
 
-        private static readonly Dictionary<int, string> FloatFields = new Dictionary<int, string>();
-        private static string _nextSelectedInput;
-        private static string _selectedInput;
+        private static readonly Dictionary<int, string> NumberFields = new Dictionary<int, string>();
+        private static string _nextNumberField;
+        private static string _selectedNumberField;
 
-        public static void FloatField(string label, ref float f)
+        private static void DoNumberField(string label, int controlId, ref string originalStr, Func<string, string> parse)
         {
-            CheckControlDraw();
-            var controlId = GetControlID(nameof(FloatField));
-
             GUILayout.BeginHorizontal();
-            if (!FloatFields.ContainsKey(controlId))
-                FloatFields.Add(controlId, f.ToString(CultureInfo.InvariantCulture));
+            if (!NumberFields.ContainsKey(controlId))
+                NumberFields.Add(controlId, originalStr);
 
             GUI.SetNextControlName(controlId.ToString());
-            FloatFields[controlId] = GUILayout.TextField(FloatFields[controlId]);
+            NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId]);
             ControlLabel(label, controlId);
             GUILayout.EndHorizontal();
 
             var incomingControl = GUI.GetNameOfFocusedControl();
-            if (_selectedInput != _nextSelectedInput || Event.current.isKey && Event.current.keyCode == KeyCode.Return)
+            if (_selectedNumberField != _nextNumberField || Event.current.isKey && Event.current.keyCode == KeyCode.Return)
             {
-                // Debug.Log($"{label} '{_nextSelectedInput}' '{_selectedInput}' '{controlId.ToString()}'");
-                if (_nextSelectedInput == controlId.ToString() || controlId.ToString() == "0")
+                if (_nextNumberField == controlId.ToString() || controlId.ToString() == "0")
                 {
                     if (controlId.ToString() == "0")
                     {
-                        // Debug.Log("trying to fix " + _nextSelectedInput);
                         try
                         {
-                            controlId = Convert.ToInt32(_nextSelectedInput);
+                            controlId = Convert.ToInt32(_nextNumberField);
                         }
                         catch (Exception)
                         {
@@ -275,39 +276,69 @@ namespace EnhancedIMGUI
                         }
                     }
 
-                    // Debug.Log("continue at " + label);
-                    if (FloatFields.ContainsKey(controlId))
+                    if (NumberFields.ContainsKey(controlId))
                     {
-                        var str = FloatFields[controlId];
-                        bool remove = true;
+                        var str = NumberFields[controlId];
                         if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str))
-                            f = 0;
+                            originalStr = "0";
                         else
                         {
-                            str = str.Replace(',', '.');
-                            if (str.Split('.').Length > 2) str = str.Remove(str.IndexOf('.'));
-                            remove = float.TryParse(str,
-                                NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands,
-                                CultureInfo.InvariantCulture, out f);
-                            if (float.IsNaN(f) || float.IsInfinity(f))
-                                f = 0f;
+                            originalStr = parse.Invoke(str);
                         }
 
-                        if (remove) FloatFields.Remove(controlId);
-
-                        // Debug.Log($"{label} finally updated to {f} from {str}");
+                        NumberFields.Remove(controlId);
                     }
                 }
             }
 
-            _nextSelectedInput = _selectedInput;
-            _selectedInput = incomingControl;
+            _nextNumberField = _selectedNumberField;
+            _selectedNumberField = incomingControl;
+        }
+
+        public static void FloatField(string label, ref float f)
+        {
+            const NumberStyles fieldStyle =
+                NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands;
+            var cultureInfo = CultureInfo.InvariantCulture;
+
+            CheckControlDraw();
+            var controlId = GetControlID(nameof(FloatField));
+            var originalStr = f.ToString(CultureInfo.InvariantCulture);
+            DoNumberField(label, controlId, ref originalStr, result =>
+            {
+                result = result.Replace(',', '.');
+                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
+                float.TryParse(result, fieldStyle, cultureInfo, out var f2);
+                if (float.IsNaN(f2) || float.IsInfinity(f2))
+                    f2 = 0f;
+
+                return f2.ToString(CultureInfo.InvariantCulture);
+            });
+            f = float.Parse(originalStr, fieldStyle, cultureInfo);
+        }
+
+        public static void IntField(string label, ref int i)
+        {
+            const NumberStyles fieldStyle = NumberStyles.Integer;
+            var cultureInfo = CultureInfo.InvariantCulture;
+
+            CheckControlDraw();
+            var controlId = GetControlID(nameof(IntField));
+            var originalStr = i.ToString();
+            DoNumberField(label, controlId, ref originalStr, result =>
+            {
+                result = result.Replace(',', '.');
+                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
+                int.TryParse(result, fieldStyle, cultureInfo, out var i2);
+                return i2.ToString();
+            });
+            i = int.Parse(originalStr, fieldStyle, cultureInfo);
         }
 
         public static void SliderFloat(string label, ref float f, float min, float max)
         {
             CheckControlDraw();
-            var controlId = GetControlID(nameof(FloatField));
+            var controlId = GetControlID(nameof(SliderFloat));
             GUILayout.BeginHorizontal();
 
             GUI.SetNextControlName(controlId.ToString());
@@ -321,7 +352,7 @@ namespace EnhancedIMGUI
         public static void SliderInt(string label, ref int i, int min, int max)
         {
             CheckControlDraw();
-            var controlId = GetControlID(nameof(FloatField));
+            var controlId = GetControlID(nameof(SliderInt));
             GUILayout.BeginHorizontal();
 
             GUI.SetNextControlName(controlId.ToString());
