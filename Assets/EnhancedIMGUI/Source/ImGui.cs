@@ -206,13 +206,13 @@ namespace EnhancedIMGUI
             if (DrawControlId)
                 str += $" ({controlId})";
 
-            GUILayout.Label(str);
+            GUILayout.Label(str, Renderer.ActiveSkin.LabelText, GUILayout.Width(LabelWidth));
         }
 
         public static bool Button(string str)
         {
             CheckControlDraw();
-            var controlId = GetControlID(nameof(Button));
+            var controlId = GetControlId(nameof(Button));
 
             GUI.SetNextControlName(controlId.ToString());
             if (DrawControlId)
@@ -223,9 +223,9 @@ namespace EnhancedIMGUI
         public static void Toggle(string label, ref bool b)
         {
             CheckControlDraw();
-            var controlId = GetControlID(nameof(Toggle));
-            GUILayout.BeginHorizontal();
-
+            var controlId = GetControlId(nameof(Toggle));
+            GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
+            GUILayout.FlexibleSpace();
             GUI.SetNextControlName(controlId.ToString());
             b = GUILayout.Toggle(b, string.Empty);
             ControlLabel(label, controlId);
@@ -234,30 +234,163 @@ namespace EnhancedIMGUI
 
         public static void InputText(string label, ref string input)
         {
+            var controlId = GetControlId(nameof(InputText));
+            InternalInputText(controlId, label, ref input, ControlWidth);
+        }
+
+        internal static void InternalInputText(int controlId, string label, ref string input, float controlWidth)
+        {
             CheckControlDraw();
-            var controlId = GetControlID(nameof(InputText));
-            GUILayout.BeginHorizontal();
+            var isLabel = !string.IsNullOrEmpty(label);
+            if (isLabel)
+                GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
 
             GUI.SetNextControlName(controlId.ToString());
-            input = GUILayout.TextField(input);
+            var style = new GUIStyle(GUI.skin.textField) {alignment = TextAnchor.MiddleLeft}; // default string input should have text to left 
+            if (isLabel)
+                input = GUILayout.TextField(input, style, GUILayout.ExpandWidth(true), GUILayout.Height(ControlHeight));
+            else
+            {
+                input = GUILayout.TextField(input, style, GUILayout.Width(controlWidth), GUILayout.Height(ControlHeight));
+            }
+
+            if (isLabel)
+            {
+                ControlLabel(label, controlId);
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        public static void SliderFloat(string label, ref float f, float min, float max)
+        {
+            CheckControlDraw();
+            var controlId = GetControlId(nameof(SliderFloat));
+            GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
+
+            GUI.SetNextControlName(controlId.ToString());
+            f = GUILayout.HorizontalSlider(f, min, max, GUILayout.Width(ControlWidth));
+            var rect = GUILayoutUtility.GetLastRect();
+            GUI.Label(rect, $"{f:0.000}", Renderer.ActiveSkin.SliderText);
             ControlLabel(label, controlId);
             GUILayout.EndHorizontal();
         }
 
-        private static readonly Dictionary<int, string> NumberFields = new Dictionary<int, string>();
-        private static string _nextNumberField;
-        private static string _selectedNumberField;
-
-        private static void DoNumberField(string label, int controlId, ref string originalStr, Func<string, string> parse)
+        public static void SliderInt(string label, ref int i, int min, int max)
         {
-            GUILayout.BeginHorizontal();
+            CheckControlDraw();
+            var controlId = GetControlId(nameof(SliderInt));
+            GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
+
+            GUI.SetNextControlName(controlId.ToString());
+            i = (int) GUILayout.HorizontalSlider(i, min, max, GUILayout.Width(ControlWidth));
+            var rect = GUILayoutUtility.GetLastRect();
+            GUI.Label(rect, $"{i}", Renderer.ActiveSkin.SliderText);
+            ControlLabel(label, controlId);
+            GUILayout.EndHorizontal();
+        }
+
+        public static void ColorEdit4(string label, ref Color c)
+        {
+            CheckControlDraw();
+            var controlId1 = GetControlId(nameof(ColorEdit4) + "_0");
+            var controlId2 = GetControlId(nameof(ColorEdit4) + "_1");
+            var controlId3 = GetControlId(nameof(ColorEdit4) + "_2");
+            var controlId4 = GetControlId(nameof(ColorEdit4) + "_3");
+
+            var fieldWidth = ControlWidth / 4 - 4;
+            GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
+
+            var r = c.r * 255f;
+            InternalFloatField(controlId1, string.Empty, ref r, fieldWidth);
+            c.r = r / 255f;
+
+            var g = c.g * 255f;
+            InternalFloatField(controlId2, string.Empty, ref g, fieldWidth);
+            c.g = g / 255f;
+
+            var b = c.b * 255f;
+            InternalFloatField(controlId3, string.Empty, ref b, fieldWidth);
+            c.b = b / 255f;
+
+            var a = c.a * 255f;
+            InternalFloatField(controlId4, string.Empty, ref a, fieldWidth);
+            c.a = a / 255f;
+
+            ControlLabel(label, controlId1);
+            GUILayout.EndHorizontal();
+        }
+
+        public static void FloatField(string label, ref float f)
+        {
+            var controlId = GetControlId(nameof(FloatField));
+            InternalFloatField(controlId, label, ref f, ControlWidth);
+        }
+
+        internal static void InternalFloatField(int controlId, string label, ref float f, float controlWidth)
+        {
+            const NumberStyles fieldStyle =
+                NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands;
+            var cultureInfo = CultureInfo.InvariantCulture;
+
+            CheckControlDraw();
+            var originalStr = f.ToString(CultureInfo.InvariantCulture);
+            InternalDoNumberField(label, controlId, ref originalStr, controlWidth, result =>
+            {
+                result = result.Replace(',', '.');
+                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
+                float.TryParse(result, fieldStyle, cultureInfo, out var f2);
+                if (float.IsNaN(f2) || float.IsInfinity(f2))
+                    f2 = 0f;
+
+                return f2.ToString(CultureInfo.InvariantCulture);
+            });
+            f = float.Parse(originalStr, fieldStyle, cultureInfo);
+        }
+
+        public static void IntField(string label, ref int i)
+        {
+            var controlId = GetControlId(nameof(FloatField));
+            InternalIntField(controlId, label, ref i, ControlWidth);
+        }
+
+        internal static void InternalIntField(int controlId, string label, ref int i, float controlWidth)
+        {
+            const NumberStyles fieldStyle = NumberStyles.Integer;
+            var cultureInfo = CultureInfo.InvariantCulture;
+
+            CheckControlDraw();
+            var originalStr = i.ToString();
+            InternalDoNumberField(label, controlId, ref originalStr, controlWidth, result =>
+            {
+                result = result.Replace(',', '.');
+                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
+                int.TryParse(result, fieldStyle, cultureInfo, out var i2);
+                return i2.ToString();
+            });
+            i = int.Parse(originalStr, fieldStyle, cultureInfo);
+        }
+
+        private static void InternalDoNumberField(string label, int controlId, ref string originalStr, float controlWidth, Func<string, string> parse)
+        {
+            var isLabel = !string.IsNullOrEmpty(label);
+
+            if (isLabel)
+                GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
+
             if (!NumberFields.ContainsKey(controlId))
                 NumberFields.Add(controlId, originalStr);
 
             GUI.SetNextControlName(controlId.ToString());
-            NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId]);
-            ControlLabel(label, controlId);
-            GUILayout.EndHorizontal();
+            if (isLabel)
+                NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId], GUILayout.ExpandWidth(true), GUILayout.Height(ControlHeight));
+            else
+                NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId], GUILayout.Width(controlWidth), GUILayout.Height(ControlHeight));
+
+            if (isLabel)
+            {
+                ControlLabel(label, controlId);
+                GUILayout.EndHorizontal();
+            }
 
             var incomingControl = GUI.GetNameOfFocusedControl();
             if (_selectedNumberField != _nextNumberField || Event.current.isKey && Event.current.keyCode == KeyCode.Return)
@@ -293,81 +426,6 @@ namespace EnhancedIMGUI
 
             _nextNumberField = _selectedNumberField;
             _selectedNumberField = incomingControl;
-        }
-
-        public static void FloatField(string label, ref float f)
-        {
-            const NumberStyles fieldStyle =
-                NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands;
-            var cultureInfo = CultureInfo.InvariantCulture;
-
-            CheckControlDraw();
-            var controlId = GetControlID(nameof(FloatField));
-            var originalStr = f.ToString(CultureInfo.InvariantCulture);
-            DoNumberField(label, controlId, ref originalStr, result =>
-            {
-                result = result.Replace(',', '.');
-                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
-                float.TryParse(result, fieldStyle, cultureInfo, out var f2);
-                if (float.IsNaN(f2) || float.IsInfinity(f2))
-                    f2 = 0f;
-
-                return f2.ToString(CultureInfo.InvariantCulture);
-            });
-            f = float.Parse(originalStr, fieldStyle, cultureInfo);
-        }
-
-        public static void IntField(string label, ref int i)
-        {
-            const NumberStyles fieldStyle = NumberStyles.Integer;
-            var cultureInfo = CultureInfo.InvariantCulture;
-
-            CheckControlDraw();
-            var controlId = GetControlID(nameof(IntField));
-            var originalStr = i.ToString();
-            DoNumberField(label, controlId, ref originalStr, result =>
-            {
-                result = result.Replace(',', '.');
-                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
-                int.TryParse(result, fieldStyle, cultureInfo, out var i2);
-                return i2.ToString();
-            });
-            i = int.Parse(originalStr, fieldStyle, cultureInfo);
-        }
-
-        public static void SliderFloat(string label, ref float f, float min, float max)
-        {
-            CheckControlDraw();
-            var controlId = GetControlID(nameof(SliderFloat));
-            GUILayout.BeginHorizontal();
-
-            GUI.SetNextControlName(controlId.ToString());
-            f = GUILayout.HorizontalSlider(f, min, max);
-            var rect = GUILayoutUtility.GetLastRect();
-            GUI.Label(rect, $"{f:0.000}", Renderer.ActiveSkin.SliderText);
-            ControlLabel(label, controlId);
-            GUILayout.EndHorizontal();
-        }
-
-        public static void SliderInt(string label, ref int i, int min, int max)
-        {
-            CheckControlDraw();
-            var controlId = GetControlID(nameof(SliderInt));
-            GUILayout.BeginHorizontal();
-
-            GUI.SetNextControlName(controlId.ToString());
-            i = (int) GUILayout.HorizontalSlider(i, min, max);
-            var rect = GUILayoutUtility.GetLastRect();
-            GUI.Label(rect, $"{i}", Renderer.ActiveSkin.SliderText);
-            ControlLabel(label, controlId);
-            GUILayout.EndHorizontal();
-        }
-
-        public static void ColorEdit4(string label, ref Color color)
-        {
-            CheckControlDraw();
-            GUILayout.BeginHorizontal();
-            GUILayout.EndHorizontal();
         }
 
         public static void StyleColorsDark() => StyleColors(EnhancedGUIManager.Instance.DefaultDarkSkin);
@@ -500,10 +558,16 @@ namespace EnhancedIMGUI
                 throw new InvalidOperationException("You are trying to draw control outside a window.");
         }
 
+        public static float ControlWidth = 140;
+        public static float ControlHeight = 25;
+        public static float LabelWidth = 50;
+
         public static bool DrawControlId { get; set; } = false;
 
-        internal static int GetControlID(string hint) =>
-            GUIUtility.GetControlID(hint.GetHashCode(), FocusType.Keyboard, GUILayoutUtility.GetLastRect()) + 1;
+        internal static int GetControlId(string hint)
+        {     
+            return GUIUtility.GetControlID(hint.GetHashCode(), FocusType.Keyboard, GUILayoutUtility.GetLastRect()) + 1;
+        }
 
         /// <summary>
         ///     User can only interact with currently rendered controls if depth is set to zero (on top of all).
@@ -512,5 +576,9 @@ namespace EnhancedIMGUI
 
         internal static EnhancedGUIWindow LastWindow { get; set; }
         internal static EnhancedGUIRenderer Renderer { get; set; }
+
+        private static readonly Dictionary<int, string> NumberFields = new Dictionary<int, string>();
+        private static string _nextNumberField;
+        private static string _selectedNumberField;
     }
 }

@@ -18,6 +18,7 @@ namespace EnhancedIMGUI
         public GUIStyle FoldoutOpen;
         public GUIStyle FoldoutClose;
         public GUIStyle SliderText;
+        public GUIStyle LabelText;
 
         [Header("Enhanced Styles (Windows)")]
         public GUIStyle Header;

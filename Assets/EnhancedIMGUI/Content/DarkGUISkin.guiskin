@@ -150,15 +150,15 @@ MonoBehaviour:
   m_toggle:
     m_Name: toggle
     m_Normal:
-      m_Background: {fileID: 11018, guid: 0000000000000000e000000000000000, type: 0}
+      m_Background: {fileID: 2800000, guid: 51debfd8584c6d44fbcc915ff8513069, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 0.89112896, g: 0.89112896, b: 0.89112896, a: 1}
     m_Hover:
-      m_Background: {fileID: 11014, guid: 0000000000000000e000000000000000, type: 0}
+      m_Background: {fileID: 2800000, guid: 0307e8867c069754fa677b39b3a1b79a, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Active:
-      m_Background: {fileID: 11013, guid: 0000000000000000e000000000000000, type: 0}
+      m_Background: {fileID: 2800000, guid: e47cbac95b821744ea898893dee7ca76, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Focused:
@@ -166,15 +166,15 @@ MonoBehaviour:
       m_ScaledBackgrounds: []
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_OnNormal:
-      m_Background: {fileID: 11016, guid: 0000000000000000e000000000000000, type: 0}
+      m_Background: {fileID: 2800000, guid: 9125933ef6e9b6c4bb8ea33401e79725, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 0.8901961, g: 0.8901961, b: 0.8901961, a: 1}
     m_OnHover:
-      m_Background: {fileID: 11015, guid: 0000000000000000e000000000000000, type: 0}
+      m_Background: {fileID: 2800000, guid: 8291f0829bee087498e3d792eefa5cdf, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_OnActive:
-      m_Background: {fileID: 11017, guid: 0000000000000000e000000000000000, type: 0}
+      m_Background: {fileID: 2800000, guid: ba3523ed3bc46614f8a5a2c36f10ced1, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_OnFocused:
@@ -189,22 +189,22 @@ MonoBehaviour:
     m_Margin:
       m_Left: 4
       m_Right: 4
-      m_Top: 4
+      m_Top: 0
       m_Bottom: 4
     m_Padding:
       m_Left: 15
       m_Right: 0
-      m_Top: 3
+      m_Top: 12
       m_Bottom: 0
     m_Overflow:
-      m_Left: -1
+      m_Left: 7
       m_Right: 0
       m_Top: -4
-      m_Bottom: 0
+      m_Bottom: -2
     m_Font: {fileID: 0}
     m_FontSize: 0
     m_FontStyle: 0
-    m_Alignment: 0
+    m_Alignment: 3
     m_WordWrap: 0
     m_RichText: 1
     m_TextClipping: 1
@@ -212,7 +212,7 @@ MonoBehaviour:
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
     m_FixedHeight: 0
-    m_StretchWidth: 1
+    m_StretchWidth: 0
     m_StretchHeight: 0
   m_label:
     m_Name: label
@@ -323,7 +323,7 @@ MonoBehaviour:
     m_Margin:
       m_Left: 0
       m_Right: 4
-      m_Top: 0
+      m_Top: 1
       m_Bottom: 0
     m_Padding:
       m_Left: 5
@@ -338,13 +338,13 @@ MonoBehaviour:
     m_Font: {fileID: 0}
     m_FontSize: 0
     m_FontStyle: 0
-    m_Alignment: 0
+    m_Alignment: 4
     m_WordWrap: 0
     m_RichText: 0
     m_TextClipping: 1
-    m_ImagePosition: 3
+    m_ImagePosition: 0
     m_ContentOffset: {x: 0, y: 0}
-    m_FixedWidth: 140
+    m_FixedWidth: 0
     m_FixedHeight: 0
     m_StretchWidth: 0
     m_StretchHeight: 0
@@ -518,24 +518,24 @@ MonoBehaviour:
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Border:
       m_Left: 3
-      m_Right: 3
+      m_Right: 10
       m_Top: 0
       m_Bottom: 0
     m_Margin:
       m_Left: 4
-      m_Right: 4
-      m_Top: -6
-      m_Bottom: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 5
     m_Padding:
       m_Left: 0
-      m_Right: 0
+      m_Right: 3
       m_Top: 9
-      m_Bottom: -11
+      m_Bottom: 22
     m_Overflow:
       m_Left: 0
-      m_Right: 0
+      m_Right: -4
       m_Top: -4
-      m_Bottom: -1
+      m_Bottom: 3
     m_Font: {fileID: 0}
     m_FontSize: 0
     m_FontStyle: 0
@@ -545,8 +545,8 @@ MonoBehaviour:
     m_TextClipping: 1
     m_ImagePosition: 2
     m_ContentOffset: {x: 0, y: 0}
-    m_FixedWidth: 140
-    m_FixedHeight: 26.5
+    m_FixedWidth: 0
+    m_FixedHeight: 0
     m_StretchWidth: 0
     m_StretchHeight: 1
   m_horizontalSliderThumb:
@@ -613,9 +613,9 @@ MonoBehaviour:
     m_ImagePosition: 2
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 12
+    m_FixedHeight: 14.7
     m_StretchWidth: 1
-    m_StretchHeight: 0
+    m_StretchHeight: 1
   m_verticalSlider:
     m_Name: verticalslider
     m_Normal:
