@@ -1,0 +1,14 @@
+{
+    "name": "EnhancedIMGUI.Test",
+    "references": [
+        "GUID:07f011e2ee6c21a499ff85e81a16f915"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
