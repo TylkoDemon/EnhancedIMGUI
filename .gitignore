@@ -9,29 +9,21 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Ll]ogs/
 [Dd]eploy/
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uild/
+[Pp]ackages/
 
 # Visual Studio 2015 cache/options directory
 .vs/
-
-# unity
-Library/
-obj/
-Temp/
-Build/
-
-# game
-Logs/
-Data/Save/
-Data/Cfg/
-Data/Config/
-Libs/
-Cache/
 
 # E
 *.csproj
 *.sln
 *.DotSettings
+*.DotSettings.user
 
 # editor
 username.txt
