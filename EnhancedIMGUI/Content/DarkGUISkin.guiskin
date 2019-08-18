@@ -278,8 +278,8 @@ MonoBehaviour:
     m_ImagePosition: 0
     m_ContentOffset: {x: 0, y: 0}
     m_FixedWidth: 0
-    m_FixedHeight: 19
-    m_StretchWidth: 1
+    m_FixedHeight: 0
+    m_StretchWidth: 0
     m_StretchHeight: 0
   m_textField:
     m_Name: textfield

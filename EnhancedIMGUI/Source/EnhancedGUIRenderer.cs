@@ -67,10 +67,15 @@ namespace EnhancedIMGUI
             }
 
             // restore default!
-            // on last frame restart last window
             ImGui.LastWindow = default(EnhancedGUIWindow);
             ImGui.DrawControlId = false;
             ImGui.ControlWidth = 140;
+
+            foreach (var r in Renderers)
+            {
+                r.CanBeginWindow = true;
+                r.CanDrawControl = false;
+            }
         }
 
         private void DrawEnhancedGUI()
