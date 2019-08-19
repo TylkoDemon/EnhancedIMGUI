@@ -14,7 +14,10 @@ namespace EnhancedIMGUI
     [Serializable]
     public class EnhancedGUISave
     {
-        internal const string SaveFileName = "enhancedIMGUI.json";
+        /// <summary>
+        ///     JSON file name of enhancedGUISave data.
+        /// </summary>
+        internal static string SaveFileName = "enhancedIMGUI.json";
 
         [Serializable]
         public class SerializableWindow
