@@ -11,6 +11,7 @@ namespace EnhancedIMGUI
     internal struct EnhancedGUIWindow
     {
         public string Guid { get; }
+        public string Name { get; }
         public Rect Rect { get; set; }
         public Rect Header { get; set; }
         public Rect Content { get; set; }
@@ -18,9 +19,10 @@ namespace EnhancedIMGUI
         public int Depth { get; set; }
         public bool IsActive { get; set; }
 
-        public EnhancedGUIWindow(string guid)
+        public EnhancedGUIWindow(string guid, string name)
         {
             Guid = guid;
+            Name = name;
             Rect = default(Rect);
             Header = default(Rect);
             Content = default(Rect);

@@ -4,9 +4,12 @@
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
 
+using UnityEngine;
+
 namespace EnhancedIMGUI.Test
 {
-    public class Test2 : EnhancedGUIRenderer
+    [DefaultExecutionOrder(10)]
+    internal class Test2 : EnhancedGUIRenderer
     {
         private bool _isActive1;
         private string _someStr1;

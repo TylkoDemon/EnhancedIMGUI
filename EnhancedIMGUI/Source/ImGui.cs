@@ -31,7 +31,7 @@ namespace EnhancedIMGUI
             // INIT
             //
             var pushDepth = false;
-            var originalRect = NextWindow(out var depth, out var guid);
+            var originalRect = NextWindow(windowName, ref isActive, out var depth, out var guid);
             var pushingRect = new Rect(originalRect);
             var header = new Rect(originalRect.x, originalRect.y, originalRect.width, headerHeight);
             GUI.depth = depth;
@@ -489,13 +489,16 @@ namespace EnhancedIMGUI
             Profiler.EndSample();
         }
 
-        internal static Rect NextWindow(out int depth, out string guid)
+        internal static Rect NextWindow(string name, ref bool isActive, out int depth, out string guid)
         {
             EnhancedGUIWindow window;
             if (Renderer.WindowsIndex >= Renderer.Windows.Length)
             {
-                var rect = new Rect(LastWindow.Rect.x + 20f, LastWindow.Rect.y + 20f, 300f, 200f);
-                window = LastWindow = new EnhancedGUIWindow(Guid.NewGuid().ToString())
+                if (!EnhancedGUISave.GetWindowRect(name, out var rect, out bool active))
+                    rect = new Rect(LastWindow.Rect.x + 20f, LastWindow.Rect.y + 20f, 300f, 200f);
+                else isActive = active;
+
+                window = LastWindow = new EnhancedGUIWindow(Guid.NewGuid().ToString(), name)
                 {
                     Rect = rect,
                     Depth = Renderer.WindowsIndex + 1

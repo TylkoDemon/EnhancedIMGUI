@@ -8,7 +8,8 @@ using UnityEngine;
 
 namespace EnhancedIMGUI.Test
 {
-    public class Test : EnhancedGUIRenderer
+    [DefaultExecutionOrder(10)]
+    internal class Test : EnhancedGUIRenderer
     {
         private bool _isActive1;
         private string _someStr1;
