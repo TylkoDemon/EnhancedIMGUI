@@ -10,4 +10,9 @@ What this means for `EnhancedIMGUI` is that you can't define multiple windows ar
 
 You can learn more about `GUI.depth` [here](https://docs.unity3d.com/ScriptReference/GUI-depth.html).
 
+## Examples
+
+Full API doc will be available in near future!
+For now you can find some help in test scripts that can be found [here](https://github.com/TylkoDemon/EnhancedIMGUI/blob/master/EnhancedIMGUI/Source/Test/Test.cs).
+
 *(c) 2019 Adam Majcherek*
