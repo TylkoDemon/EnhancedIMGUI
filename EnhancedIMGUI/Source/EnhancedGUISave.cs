@@ -9,16 +9,18 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+// disable xml doc warn
+#pragma warning disable 1591
+
 namespace EnhancedIMGUI
 {
+    /// <summary>
+    ///     EnhancedGUI Save.
+    ///     Contains data for all enhanced GUI elements.
+    /// </summary>
     [Serializable]
     public class EnhancedGUISave
     {
-        /// <summary>
-        ///     JSON file name of enhancedGUISave data.
-        /// </summary>
-        public static string SaveFileName = "enhancedIMGUI.json";
-
         [Serializable]
         public class SerializableWindow
         {
@@ -29,6 +31,9 @@ namespace EnhancedIMGUI
             internal bool Ready = true;
         }
 
+        /// <summary>
+        ///     List of saved/loaded windows.
+        /// </summary>
         public List<SerializableWindow> Windows = new List<SerializableWindow>();
 
         private SerializableWindow GetWindowData(string windowName)
@@ -65,6 +70,9 @@ namespace EnhancedIMGUI
             return false;
         }
 
+        /// <summary>
+        ///     Load the save.
+        /// </summary>
         public static void LoadSave()
         {
             if (!File.Exists(SaveFileName))
@@ -72,6 +80,9 @@ namespace EnhancedIMGUI
             else Loaded = JsonUtility.FromJson<EnhancedGUISave>(File.ReadAllText(SaveFileName));
         }
 
+        /// <summary>
+        ///     Write the save file.
+        /// </summary>
         public static void WriteSave()
         {
             if (Loaded == null) Loaded = new EnhancedGUISave();
@@ -103,5 +114,10 @@ namespace EnhancedIMGUI
         ///     Loaded data of GUI windows.
         /// </summary>
         internal static EnhancedGUISave Loaded { get; private set; }
+
+        /// <summary>
+        ///     JSON file name of enhancedGUISave data.
+        /// </summary>
+        public static string SaveFileName = "enhancedIMGUI.json";
     }
 }

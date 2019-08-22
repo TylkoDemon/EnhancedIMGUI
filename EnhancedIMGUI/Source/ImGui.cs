@@ -14,8 +14,15 @@ using Debug = UnityEngine.Debug;
 
 namespace EnhancedIMGUI
 {
+    /// <summary>
+    ///     Core EnhancedIMGUI class.
+    ///     Contains all controls EnhancedIMGUI can draw.
+    /// </summary>
     public static class ImGui
     {
+        /// <summary>
+        ///     Begins new window area.
+        /// </summary>
         public static int Begin(string windowName, ref bool isActive)
         {
             if (!Renderer.CanBeginWindow)
@@ -182,6 +189,9 @@ namespace EnhancedIMGUI
             return Renderer.WindowsIndex;
         }
 
+        /// <summary>
+        ///     Ends window area.
+        /// </summary>
         public static void End()
         {
             if (Renderer.CanBeginWindow)
@@ -194,6 +204,9 @@ namespace EnhancedIMGUI
             GUILayout.EndArea();
         }
 
+        /// <summary>
+        ///     Draws text.
+        /// </summary>
         public static void Text(string str)
         {
             CheckControlDraw();
@@ -209,6 +222,9 @@ namespace EnhancedIMGUI
             GUILayout.Label(str, Renderer.ActiveSkin.LabelText, GUILayout.Width(LabelWidth));
         }
 
+        /// <summary>
+        ///     Draws a button.
+        /// </summary>
         public static bool Button(string str)
         {
             CheckControlDraw();
@@ -220,6 +236,9 @@ namespace EnhancedIMGUI
             return GUILayout.Button(str);
         }
 
+        /// <summary>
+        ///     Draws a toggle.
+        /// </summary>
         public static void Toggle(string label, ref bool b)
         {
             CheckControlDraw();
@@ -232,6 +251,9 @@ namespace EnhancedIMGUI
             GUILayout.EndHorizontal();
         }
 
+        /// <summary>
+        ///     Draws a text input.
+        /// </summary>
         public static void InputText(string label, ref string input)
         {
             var controlId = GetControlId(nameof(InputText));
@@ -261,6 +283,9 @@ namespace EnhancedIMGUI
             }
         }
 
+        /// <summary>
+        ///     Draws a float slider.
+        /// </summary>
         public static void SliderFloat(string label, ref float f, float min, float max)
         {
             CheckControlDraw();
@@ -275,6 +300,9 @@ namespace EnhancedIMGUI
             GUILayout.EndHorizontal();
         }
 
+        /// <summary>
+        ///     Draws a in slider.
+        /// </summary>
         public static void SliderInt(string label, ref int i, int min, int max)
         {
             CheckControlDraw();
@@ -289,6 +317,10 @@ namespace EnhancedIMGUI
             GUILayout.EndHorizontal();
         }
 
+        /// <summary>
+        ///     Draws a color4 field.
+        /// </summary>
+        /// <remarks>Not fully implemented yet.</remarks>
         public static void ColorEdit4(string label, ref Color c)
         {
             CheckControlDraw();
@@ -320,6 +352,9 @@ namespace EnhancedIMGUI
             GUILayout.EndHorizontal();
         }
 
+        /// <summary>
+        ///     Draws a Single field.
+        /// </summary>
         public static void FloatField(string label, ref float f)
         {
             var controlId = GetControlId(nameof(FloatField));
@@ -347,6 +382,9 @@ namespace EnhancedIMGUI
             f = float.Parse(originalStr, fieldStyle, cultureInfo);
         }
 
+        /// <summary>
+        ///     Draws a Int32 field.
+        /// </summary>
         public static void IntField(string label, ref int i)
         {
             var controlId = GetControlId(nameof(FloatField));
@@ -428,8 +466,14 @@ namespace EnhancedIMGUI
             _selectedNumberField = incomingControl;
         }
 
+        /// <summary>
+        ///     Apply default dark style colors.
+        /// </summary>
         public static void StyleColorsDark() => StyleColors(EnhancedGUIManager.Instance.DefaultDarkSkin);
 
+        /// <summary>
+        ///     Apply your style colors.
+        /// </summary>
         public static void StyleColors([NotNull] EnhancedGUISkin skin)
         {
             if (skin == null) throw new ArgumentNullException(nameof(skin));
@@ -561,10 +605,24 @@ namespace EnhancedIMGUI
                 throw new InvalidOperationException("You are trying to draw control outside a window.");
         }
 
+        /// <summary>
+        ///     Width of next drawn control.
+        /// </summary>
         public static float ControlWidth = 140;
+
+        /// <summary>
+        ///     Height of next drawn control.
+        /// </summary>
         public static float ControlHeight = 25;
+
+        /// <summary>
+        ///     Width of next drawn label.
+        /// </summary>
         public static float LabelWidth = 50;
 
+        /// <summary>
+        ///     (debug) If true, draws controlId of next control.
+        /// </summary>
         public static bool DrawControlId { get; set; } = false;
 
         internal static int GetControlId(string hint)
@@ -574,6 +632,7 @@ namespace EnhancedIMGUI
 
         /// <summary>
         ///     User can only interact with currently rendered controls if depth is set to zero (on top of all).
+        ///     It checks if current depth is equals zero.
         /// </summary>
         internal static bool CanInteract() => GUI.depth == 0;
 

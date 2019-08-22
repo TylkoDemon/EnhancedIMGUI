@@ -6,8 +6,16 @@
 
 using UnityEngine;
 
+// disable xml doc warn
+#pragma warning disable 1591
+
 namespace EnhancedIMGUI
 {
+    /// <inheritdoc />
+    /// <summary>
+    ///     The EnhancedGUI Skin.
+    ///     It defines style of every object used in EnhancedGUI.
+    /// </summary>
     [CreateAssetMenu(fileName = "newEnhancedGUISkin", menuName = "Enhanced GUI Skin")]
     public class EnhancedGUISkin : ScriptableObject
     {

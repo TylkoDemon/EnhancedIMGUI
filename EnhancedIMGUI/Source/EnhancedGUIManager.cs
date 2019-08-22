@@ -8,9 +8,17 @@ using UnityEngine;
 
 namespace EnhancedIMGUI
 {
+    /// <inheritdoc />
+    /// <summary>
+    ///     EnhancedGUI Manager.
+    ///     It contains some main EnhancedGUI references like default styles. (for now)
+    /// </summary>
     [DefaultExecutionOrder(-667)]
     public class EnhancedGUIManager : MonoBehaviour
     {
+        /// <summary>
+        ///     Default (dark) skin reference.
+        /// </summary>
         [Header("Resources ")]
         public EnhancedGUISkin DefaultDarkSkin;
 

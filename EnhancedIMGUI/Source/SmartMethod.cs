@@ -1,5 +1,5 @@
 ﻿//
-// Overmodded Source
+// EnhancedIMGUI Source
 //
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
@@ -33,16 +33,6 @@ namespace EnhancedIMGUI
             return Invoke(null);
         }
 
-        public object Invoke(params object[] parameters)
-        {
-            /*
-            if (!IsValid())
-            {
-                throw new NullReferenceException($"Method is not valid. {_classObj.GetType().FullName}::{_methodName}");
-            }
-            */
-
-            return _methodInfo?.Invoke(_classObj, parameters);
-        }
+        public object Invoke(params object[] parameters) => _methodInfo?.Invoke(_classObj, parameters);      
     }
 }

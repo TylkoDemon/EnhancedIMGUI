@@ -15,6 +15,8 @@ namespace EnhancedIMGUI
 {
     /// <inheritdoc />
     /// <summary>
+    ///     EnhancedGUI Renderer.
+    ///     Main GUI component thanks to you can render your EnhancedGUI!
     ///     Because of Unity's GUI.depth implementation to utilize gui Z order we need to call each window in separate OnGUI.
     /// </summary>
     [DefaultExecutionOrder(-666)]
