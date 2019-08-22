@@ -17,7 +17,7 @@ namespace EnhancedIMGUI
         /// <summary>
         ///     JSON file name of enhancedGUISave data.
         /// </summary>
-        internal static string SaveFileName = "enhancedIMGUI.json";
+        public static string SaveFileName = "enhancedIMGUI.json";
 
         [Serializable]
         public class SerializableWindow
