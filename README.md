@@ -12,7 +12,6 @@ You can learn more about `GUI.depth` [here](https://docs.unity3d.com/ScriptRefer
 
 ## Examples
 
-Full API doc will be available in near future!
-For now you can find some help in test scripts that can be found [here](https://github.com/TylkoDemon/EnhancedIMGUI/blob/master/EnhancedIMGUI/Source/Test/Test.cs).
+Full API Documentation can be found [here](https://alwaystoolate.com/overmodded/#/EnhancedIMGUI/API/type/objImGui)
 
 *(c) 2019 Adam Majcherek*
