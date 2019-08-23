@@ -229,60 +229,37 @@ namespace EnhancedIMGUI
         /// <summary>
         ///     Draws a toggle.
         /// </summary>
-        public static void Toggle(string label, ref bool b)
-        {
-            CheckControlDraw();
-            var controlId = GetControlId(nameof(Toggle));
-            GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
-            GUILayout.FlexibleSpace();
-            GUI.SetNextControlName(controlId.ToString());
-            b = GUILayout.Toggle(b, string.Empty);
-            ImGuiInternal.ControlLabel(label, controlId);
-            GUILayout.EndHorizontal();
-        }
-
+        public static void Toggle(string label, ref bool b) => ImGuiInternal.InternalToggle(GetControlId(nameof(Toggle)), label, ref b, ControlWidth);
+        
         /// <summary>
         ///     Draws a text input.
         /// </summary>
-        public static void InputText(string label, ref string input)
-        {
-            var controlId = GetControlId(nameof(InputText));
-            ImGuiInternal.InternalInputText(controlId, label, ref input, ControlWidth);
-        }
-
+        public static void InputText(string label, ref string input) => ImGuiInternal.InternalInputText(GetControlId(nameof(InputText)), label, ref input, ControlWidth);
+        
         /// <summary>
         ///     Draws a float slider.
         /// </summary>
-        public static void SliderFloat(string label, ref float f, float min, float max)
-        {
-            CheckControlDraw();
-            var controlId = GetControlId(nameof(SliderFloat));
-            GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
-
-            GUI.SetNextControlName(controlId.ToString());
-            f = GUILayout.HorizontalSlider(f, min, max, GUILayout.Width(ControlWidth));
-            var rect = GUILayoutUtility.GetLastRect();
-            GUI.Label(rect, $"{f:0.000}", Renderer.ActiveSkin.SliderText);
-            ImGuiInternal.ControlLabel(label, controlId);
-            GUILayout.EndHorizontal();
-        }
-
+        public static void SliderFloat(string label, ref float f, float min, float max) => ImGuiInternal.InternalSlider(GetControlId(nameof(SliderFloat)), label, ref f, min, max, false, ControlWidth);
+        
         /// <summary>
-        ///     Draws a in slider.
+        ///     Draws a int slider.
         /// </summary>
         public static void SliderInt(string label, ref int i, int min, int max)
         {
-            CheckControlDraw();
-            var controlId = GetControlId(nameof(SliderInt));
-            GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
-
-            GUI.SetNextControlName(controlId.ToString());
-            i = (int) GUILayout.HorizontalSlider(i, min, max, GUILayout.Width(ControlWidth));
-            var rect = GUILayoutUtility.GetLastRect();
-            GUI.Label(rect, $"{i}", Renderer.ActiveSkin.SliderText);
-            ImGuiInternal.ControlLabel(label, controlId);
-            GUILayout.EndHorizontal();
+            float f = i;
+            ImGuiInternal.InternalSlider(GetControlId(nameof(SliderInt)), label, ref f, min, max, true, ControlWidth);
+            i = (int) f;
         }
+
+        /// <summary>
+        ///     Draws a Single field.
+        /// </summary>
+        public static void FloatField(string label, ref float f) => ImGuiInternal.InternalFloatField(GetControlId(nameof(FloatField)), label, ref f, ControlWidth);
+        
+        /// <summary>
+        ///     Draws a Int32 field.
+        /// </summary>
+        public static void IntField(string label, ref int i) => ImGuiInternal.InternalIntField(GetControlId(nameof(IntField)), label, ref i, ControlWidth);
 
         /// <summary>
         ///     Draws a color4 field.
@@ -317,24 +294,6 @@ namespace EnhancedIMGUI
 
             ImGuiInternal.ControlLabel(label, controlId1);
             GUILayout.EndHorizontal();
-        }
-
-        /// <summary>
-        ///     Draws a Single field.
-        /// </summary>
-        public static void FloatField(string label, ref float f)
-        {
-            var controlId = GetControlId(nameof(FloatField));
-            ImGuiInternal.InternalFloatField(controlId, label, ref f, ControlWidth);
-        }
-
-        /// <summary>
-        ///     Draws a Int32 field.
-        /// </summary>
-        public static void IntField(string label, ref int i)
-        {
-            var controlId = GetControlId(nameof(FloatField));
-            ImGuiInternal.InternalIntField(controlId, label, ref i, ControlWidth);
         }
 
         /// <summary>

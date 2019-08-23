@@ -25,6 +25,33 @@ namespace EnhancedIMGUI
         }
 
         /// <summary/>
+        internal static void InternalToggle(int controlId, string label, ref bool b, float controlWidth)
+        {
+            ImGui.CheckControlDraw();
+            GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
+            GUILayout.FlexibleSpace();
+            GUI.SetNextControlName(controlId.ToString());
+            b = GUILayout.Toggle(b, string.Empty);
+            ControlLabel(label, controlId);
+            GUILayout.EndHorizontal();
+        }
+
+        /// <summary/>
+        internal static void InternalSlider(int controlId, string label, ref float f, float min, float max, bool fullNumbers, float controlWidth)
+        {
+            ImGui.CheckControlDraw();
+            GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
+            GUI.SetNextControlName(controlId.ToString());
+            f = GUILayout.HorizontalSlider(f, min, max, GUILayout.Width(controlWidth));
+            if (fullNumbers)
+                f = (int) f;
+            var rect = GUILayoutUtility.GetLastRect();
+            GUI.Label(rect, fullNumbers ?$"{f:0}": $"{f:0.000}", Renderer.ActiveSkin.SliderText);
+            ControlLabel(label, controlId);
+            GUILayout.EndHorizontal();
+        }
+
+        /// <summary/>
         internal static void InternalInputText(int controlId, string label, ref string input, float controlWidth)
         {
             ImGui.CheckControlDraw();
