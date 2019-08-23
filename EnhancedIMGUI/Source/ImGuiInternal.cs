@@ -32,6 +32,7 @@ namespace EnhancedIMGUI
             GUILayout.FlexibleSpace();
             GUI.SetNextControlName(controlId.ToString());
             b = GUILayout.Toggle(b, string.Empty);
+            ImGui.CheckControlAndDrawPointer();
             ControlLabel(label, controlId);
             GUILayout.EndHorizontal();
         }
@@ -43,6 +44,7 @@ namespace EnhancedIMGUI
             GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
             GUI.SetNextControlName(controlId.ToString());
             f = GUILayout.HorizontalSlider(f, min, max, GUILayout.Width(controlWidth));
+            ImGui.CheckControlAndDrawPointer();
             if (fullNumbers)
                 f = (int) f;
             var rect = GUILayoutUtility.GetLastRect();
@@ -67,6 +69,7 @@ namespace EnhancedIMGUI
             {
                 input = GUILayout.TextField(input, style, GUILayout.Width(controlWidth), GUILayout.Height(ControlHeight));
             }
+            ImGui.CheckControlAndDrawPointer();
 
             if (isLabel)
             {
@@ -131,6 +134,7 @@ namespace EnhancedIMGUI
                 NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId], GUILayout.ExpandWidth(true), GUILayout.Height(ControlHeight));
             else
                 NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId], GUILayout.Width(controlWidth), GUILayout.Height(ControlHeight));
+            ImGui.CheckControlAndDrawPointer();
 
             if (isLabel)
             {

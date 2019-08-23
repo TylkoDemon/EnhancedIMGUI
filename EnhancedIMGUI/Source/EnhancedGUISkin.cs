@@ -38,7 +38,8 @@ namespace EnhancedIMGUI
         public GUIStyle Hidden;
 
         [Header("Cursor")]
-        public Texture2D CursorHand;
+        public Texture2D CursorPoint;
+        public Texture2D CursorDrag;
 
         public const char RightwardsArrowChar = '►';
         public const char DownwardsArrowChar = '▼';

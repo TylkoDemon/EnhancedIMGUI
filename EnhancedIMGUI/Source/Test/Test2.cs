@@ -14,6 +14,7 @@ namespace EnhancedIMGUI.Test
         private bool _isActive1;
         private string _someStr1;
 
+        /*
         private void OnEnhancedGUI()
         {
             ImGui.StyleColorsDark();
@@ -27,5 +28,6 @@ namespace EnhancedIMGUI.Test
             ImGui.InputText("string", ref _someStr1);
             ImGui.End();
         }
+        */
     }
 }

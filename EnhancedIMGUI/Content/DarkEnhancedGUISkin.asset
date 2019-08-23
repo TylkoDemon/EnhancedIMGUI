@@ -616,4 +616,5 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 0
-  CursorHand: {fileID: 2800000, guid: e5fa50ee16942d54e81d01d226b778e9, type: 3}
+  CursorPoint: {fileID: 2800000, guid: e5fa50ee16942d54e81d01d226b778e9, type: 3}
+  CursorDrag: {fileID: 2800000, guid: dc4ea72d124df0345a34f51ab5a9053d, type: 3}

@@ -74,7 +74,7 @@ namespace EnhancedIMGUI
             {
                 if (header.Contains(e.mousePosition))
                 {
-                    Cursor.SetCursor(EnhancedGUIManager.Instance.DefaultDarkSkin.CursorHand, Vector2.zero, CursorMode.Auto);
+                    SetCursor(Renderer.ActiveSkin.CursorPoint);
                     if (e.type == EventType.MouseDown)
                     {
                         Renderer.IsWindowMoving = true;
@@ -84,8 +84,7 @@ namespace EnhancedIMGUI
                         Renderer.FrameTarget = Renderer.WindowsIndex;
                         pushDepth = true;
                     }
-                }
-                else Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);           
+                }     
             }
 
             if (e.type == EventType.MouseUp)
@@ -99,6 +98,8 @@ namespace EnhancedIMGUI
             //
             if (CanInteract() && Renderer.IsWindowMoving && Renderer.FrameTarget == Renderer.WindowsIndex)
             {
+                SetCursor(Renderer.ActiveSkin.CursorDrag);
+
                 var delta = new Vector2(e.mousePosition.x - Renderer.MouseStartPosition.x, e.mousePosition.y - Renderer.MouseStartPosition.y);
                 pushingRect.position = new Vector2(Renderer.StartRect.x + delta.x, Renderer.StartRect.y + delta.y);
 
@@ -135,8 +136,7 @@ namespace EnhancedIMGUI
             {
                 if (resizeButton.Contains(e.mousePosition))
                 {
-                    Cursor.SetCursor(EnhancedGUIManager.Instance.DefaultDarkSkin.CursorHand, Vector2.zero,
-                        CursorMode.Auto);
+                    SetCursor(Renderer.ActiveSkin.CursorPoint);
                     if (e.type == EventType.MouseDown && Renderer.FrameTarget == -1)
                     {
                         Renderer.IsWindowResize = true;
@@ -146,10 +146,6 @@ namespace EnhancedIMGUI
                         Renderer.FrameTarget = Renderer.WindowsIndex;
                         pushDepth = true;
                     }
-                }
-                else
-                {
-                    Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
                 }
             }
 
@@ -164,6 +160,8 @@ namespace EnhancedIMGUI
             //
             if (CanInteract() && Renderer.IsWindowResize && Renderer.FrameTarget == Renderer.WindowsIndex)
             {
+                SetCursor(Renderer.ActiveSkin.CursorDrag);
+
                 var delta = new Vector2(e.mousePosition.x - Renderer.MouseStartPosition.x,
                     e.mousePosition.y - Renderer.MouseStartPosition.y);
                 pushingRect.size =
@@ -223,7 +221,9 @@ namespace EnhancedIMGUI
             GUI.SetNextControlName(controlId.ToString());
             if (DrawControlId)
                 str += $" ({controlId})";
-            return GUILayout.Button(str);
+            var b = GUILayout.Button(str);
+            CheckControlAndDrawPointer();
+            return b;
         }
 
         /// <summary>
@@ -380,6 +380,29 @@ namespace EnhancedIMGUI
         }
 
         /// <summary>
+        ///     Ends current frame.
+        /// </summary>
+        /// <remarks>Called at the end of last GUIRenderer.</remarks>
+        internal static void EndFrame()
+        {
+            // restore default!
+            LastWindow = default(EnhancedGUIWindow);
+            DrawControlId = false;
+            ControlWidth = 140;
+
+            if (_cursorIcon != null && _frame > _drawCursorIcon)
+                SetCursor(null);
+
+            foreach (var r in EnhancedGUIRenderer.Renderers)
+            {
+                r.CanBeginWindow = true;
+                r.CanDrawControl = false;
+            }
+
+            _frame++;
+        }
+
+        /// <summary>
         ///     Get rect for next window.
         /// </summary>
         internal static Rect NextWindow(string name, ref bool isActive, out int depth, out string guid)
@@ -449,6 +472,32 @@ namespace EnhancedIMGUI
         }
 
         /// <summary>
+        ///     Checks if any control is currently under the cursor and if so, sets the texture to 'Pointer'.
+        /// </summary>
+        internal static void CheckControlAndDrawPointer()
+        {
+            if (GUI.depth != 0)
+                return; // only if last control is on top?
+
+            if (IsControlUnderMouse())
+            {
+                SetCursor(Renderer.ActiveSkin.CursorPoint);
+            }
+        }
+
+        /// <summary>
+        ///     Sets cursor icon for next frame.
+        /// </summary>
+        internal static void SetCursor(Texture2D cursorTex)
+        {
+            _cursorIcon = cursorTex;
+            if (cursorTex != null)  _drawCursorIcon = _frame + 3;     
+        }
+
+        /// <summary/>
+        internal static void DrawCursor() => Cursor.SetCursor(_cursorIcon, Vector2.zero, CursorMode.Auto);
+        
+        /// <summary>
         ///     Checks if any control can be currently drawn.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
@@ -462,6 +511,15 @@ namespace EnhancedIMGUI
         ///     Get ID of last control.
         /// </summary>
         internal static int GetControlId(string hint) => GUIUtility.GetControlID(hint.GetHashCode(), FocusType.Keyboard, GUILayoutUtility.GetLastRect()) + 1;
+
+        /// <summary>
+        ///     Checks is mouse is under last drawn control.
+        /// </summary>
+        internal static bool IsControlUnderMouse()
+        {
+            var controlRect = GUILayoutUtility.GetLastRect();
+            return controlRect.Contains(Event.current.mousePosition);
+        }
 
         /// <summary>
         ///     It checks if current depth is equals zero.
@@ -494,5 +552,11 @@ namespace EnhancedIMGUI
 
         /// <summary/>
         internal static EnhancedGUIRenderer Renderer { get; set; }
+
+        /// <summary/>
+        private static Texture2D _cursorIcon;
+        private static int _drawCursorIcon;
+
+        private static int _frame;
     }
 }

@@ -58,7 +58,10 @@ namespace EnhancedIMGUI
             ImGui.Renderer = this;
             // apply default style just for sure
             ImGui.StyleColorsDark();
+            // draw EnhancedGUI!
             DrawEnhancedGUI();
+            // apply cursor icon
+            ImGui.DrawCursor();
             ImGui.EndWindows();
             ImGui.Renderer = null;
             Profiler.EndSample();
@@ -76,16 +79,7 @@ namespace EnhancedIMGUI
                     return;
             }
 
-            // restore default!
-            ImGui.LastWindow = default(EnhancedGUIWindow);
-            ImGui.DrawControlId = false;
-            ImGui.ControlWidth = 140;
-
-            foreach (var r in Renderers)
-            {
-                r.CanBeginWindow = true;
-                r.CanDrawControl = false;
-            }
+            ImGui.EndFrame();
         }
 
         private void DrawEnhancedGUI()
