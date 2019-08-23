@@ -54,7 +54,7 @@ namespace EnhancedIMGUI.Test
 
                 ImGui.Toggle("bool", ref _someBool1);
 
-                ImGui.ColorEdit4("color4", ref _color1);
+                // ImGui.ColorEdit4("color4", ref _color1);
             }
             ImGui.End();
         }

@@ -7,7 +7,6 @@
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 using UnityEngine.Profiling;
 using Debug = UnityEngine.Debug;
@@ -213,15 +212,6 @@ namespace EnhancedIMGUI
             GUILayout.Label(str);
         }
 
-        internal static void ControlLabel(string str, int controlId)
-        {
-            CheckControlDraw();
-            if (DrawControlId)
-                str += $" ({controlId})";
-
-            GUILayout.Label(str, Renderer.ActiveSkin.LabelText, GUILayout.Width(LabelWidth));
-        }
-
         /// <summary>
         ///     Draws a button.
         /// </summary>
@@ -247,7 +237,7 @@ namespace EnhancedIMGUI
             GUILayout.FlexibleSpace();
             GUI.SetNextControlName(controlId.ToString());
             b = GUILayout.Toggle(b, string.Empty);
-            ControlLabel(label, controlId);
+            ImGuiInternal.ControlLabel(label, controlId);
             GUILayout.EndHorizontal();
         }
 
@@ -257,30 +247,7 @@ namespace EnhancedIMGUI
         public static void InputText(string label, ref string input)
         {
             var controlId = GetControlId(nameof(InputText));
-            InternalInputText(controlId, label, ref input, ControlWidth);
-        }
-
-        internal static void InternalInputText(int controlId, string label, ref string input, float controlWidth)
-        {
-            CheckControlDraw();
-            var isLabel = !string.IsNullOrEmpty(label);
-            if (isLabel)
-                GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
-
-            GUI.SetNextControlName(controlId.ToString());
-            var style = new GUIStyle(GUI.skin.textField) {alignment = TextAnchor.MiddleLeft}; // default string input should have text to left 
-            if (isLabel)
-                input = GUILayout.TextField(input, style, GUILayout.ExpandWidth(true), GUILayout.Height(ControlHeight));
-            else
-            {
-                input = GUILayout.TextField(input, style, GUILayout.Width(controlWidth), GUILayout.Height(ControlHeight));
-            }
-
-            if (isLabel)
-            {
-                ControlLabel(label, controlId);
-                GUILayout.EndHorizontal();
-            }
+            ImGuiInternal.InternalInputText(controlId, label, ref input, ControlWidth);
         }
 
         /// <summary>
@@ -296,7 +263,7 @@ namespace EnhancedIMGUI
             f = GUILayout.HorizontalSlider(f, min, max, GUILayout.Width(ControlWidth));
             var rect = GUILayoutUtility.GetLastRect();
             GUI.Label(rect, $"{f:0.000}", Renderer.ActiveSkin.SliderText);
-            ControlLabel(label, controlId);
+            ImGuiInternal.ControlLabel(label, controlId);
             GUILayout.EndHorizontal();
         }
 
@@ -313,7 +280,7 @@ namespace EnhancedIMGUI
             i = (int) GUILayout.HorizontalSlider(i, min, max, GUILayout.Width(ControlWidth));
             var rect = GUILayoutUtility.GetLastRect();
             GUI.Label(rect, $"{i}", Renderer.ActiveSkin.SliderText);
-            ControlLabel(label, controlId);
+            ImGuiInternal.ControlLabel(label, controlId);
             GUILayout.EndHorizontal();
         }
 
@@ -333,22 +300,22 @@ namespace EnhancedIMGUI
             GUILayout.BeginHorizontal(GUILayout.Width(ControlWidth + LabelWidth), GUILayout.Height(ControlHeight));
 
             var r = c.r * 255f;
-            InternalFloatField(controlId1, string.Empty, ref r, fieldWidth);
+            ImGuiInternal.InternalFloatField(controlId1, string.Empty, ref r, fieldWidth);
             c.r = r / 255f;
 
             var g = c.g * 255f;
-            InternalFloatField(controlId2, string.Empty, ref g, fieldWidth);
+            ImGuiInternal.InternalFloatField(controlId2, string.Empty, ref g, fieldWidth);
             c.g = g / 255f;
 
             var b = c.b * 255f;
-            InternalFloatField(controlId3, string.Empty, ref b, fieldWidth);
+            ImGuiInternal.InternalFloatField(controlId3, string.Empty, ref b, fieldWidth);
             c.b = b / 255f;
 
             var a = c.a * 255f;
-            InternalFloatField(controlId4, string.Empty, ref a, fieldWidth);
+            ImGuiInternal.InternalFloatField(controlId4, string.Empty, ref a, fieldWidth);
             c.a = a / 255f;
 
-            ControlLabel(label, controlId1);
+            ImGuiInternal.ControlLabel(label, controlId1);
             GUILayout.EndHorizontal();
         }
 
@@ -358,28 +325,7 @@ namespace EnhancedIMGUI
         public static void FloatField(string label, ref float f)
         {
             var controlId = GetControlId(nameof(FloatField));
-            InternalFloatField(controlId, label, ref f, ControlWidth);
-        }
-
-        internal static void InternalFloatField(int controlId, string label, ref float f, float controlWidth)
-        {
-            const NumberStyles fieldStyle =
-                NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands;
-            var cultureInfo = CultureInfo.InvariantCulture;
-
-            CheckControlDraw();
-            var originalStr = f.ToString(CultureInfo.InvariantCulture);
-            InternalDoNumberField(label, controlId, ref originalStr, controlWidth, result =>
-            {
-                result = result.Replace(',', '.');
-                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
-                float.TryParse(result, fieldStyle, cultureInfo, out var f2);
-                if (float.IsNaN(f2) || float.IsInfinity(f2))
-                    f2 = 0f;
-
-                return f2.ToString(CultureInfo.InvariantCulture);
-            });
-            f = float.Parse(originalStr, fieldStyle, cultureInfo);
+            ImGuiInternal.InternalFloatField(controlId, label, ref f, ControlWidth);
         }
 
         /// <summary>
@@ -388,82 +334,7 @@ namespace EnhancedIMGUI
         public static void IntField(string label, ref int i)
         {
             var controlId = GetControlId(nameof(FloatField));
-            InternalIntField(controlId, label, ref i, ControlWidth);
-        }
-
-        internal static void InternalIntField(int controlId, string label, ref int i, float controlWidth)
-        {
-            const NumberStyles fieldStyle = NumberStyles.Integer;
-            var cultureInfo = CultureInfo.InvariantCulture;
-
-            CheckControlDraw();
-            var originalStr = i.ToString();
-            InternalDoNumberField(label, controlId, ref originalStr, controlWidth, result =>
-            {
-                result = result.Replace(',', '.');
-                if (result.Split('.').Length > 2) result = result.Remove(result.IndexOf('.'));
-                int.TryParse(result, fieldStyle, cultureInfo, out var i2);
-                return i2.ToString();
-            });
-            i = int.Parse(originalStr, fieldStyle, cultureInfo);
-        }
-
-        private static void InternalDoNumberField(string label, int controlId, ref string originalStr, float controlWidth, Func<string, string> parse)
-        {
-            var isLabel = !string.IsNullOrEmpty(label);
-
-            if (isLabel)
-                GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
-
-            if (!NumberFields.ContainsKey(controlId))
-                NumberFields.Add(controlId, originalStr);
-
-            GUI.SetNextControlName(controlId.ToString());
-            if (isLabel)
-                NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId], GUILayout.ExpandWidth(true), GUILayout.Height(ControlHeight));
-            else
-                NumberFields[controlId] = GUILayout.TextField(NumberFields[controlId], GUILayout.Width(controlWidth), GUILayout.Height(ControlHeight));
-
-            if (isLabel)
-            {
-                ControlLabel(label, controlId);
-                GUILayout.EndHorizontal();
-            }
-
-            var incomingControl = GUI.GetNameOfFocusedControl();
-            if (_selectedNumberField != _nextNumberField || Event.current.isKey && Event.current.keyCode == KeyCode.Return)
-            {
-                if (_nextNumberField == controlId.ToString() || controlId.ToString() == "0")
-                {
-                    if (controlId.ToString() == "0")
-                    {
-                        try
-                        {
-                            controlId = Convert.ToInt32(_nextNumberField);
-                        }
-                        catch (Exception)
-                        {
-                            controlId = 0;
-                        }
-                    }
-
-                    if (NumberFields.ContainsKey(controlId))
-                    {
-                        var str = NumberFields[controlId];
-                        if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str))
-                            originalStr = "0";
-                        else
-                        {
-                            originalStr = parse.Invoke(str);
-                        }
-
-                        NumberFields.Remove(controlId);
-                    }
-                }
-            }
-
-            _nextNumberField = _selectedNumberField;
-            _selectedNumberField = incomingControl;
+            ImGuiInternal.InternalIntField(controlId, label, ref i, ControlWidth);
         }
 
         /// <summary>
@@ -478,19 +349,28 @@ namespace EnhancedIMGUI
         {
             if (skin == null) throw new ArgumentNullException(nameof(skin));
             Renderer.ActiveSkin = skin;
+
+            // apply
+            ApplyStyle();
         }
 
+        /// <summary>
+        ///     Apply currently active style.
+        /// </summary>
         internal static void ApplyStyle()
         {
             if (Renderer.ActiveSkin == null)
             {
-                Debug.LogWarning("No active skin detected! Setting dark style.");
-                StyleColorsDark();
+                Debug.LogError("No active skin detected!");
+                return;
             }
 
             GUI.skin = Renderer.ActiveSkin.BaseSkinReference;
         }
 
+        /// <summary>
+        ///     Clamps rect position to the screen one.
+        /// </summary>
         internal static void ClampRectToScreen(ref Rect rect, Rect screen)
         {
             if (rect.x < screen.x)
@@ -504,6 +384,10 @@ namespace EnhancedIMGUI
                 rect.y = screen.height - rect.height;
         }
 
+        /// <summary>
+        ///     Clamps size of rect.
+        /// </summary>
+        /// <remarks>It currently only can clamp rect size to screen size.</remarks>
         internal static void ClampRectSize(ref Rect rect)
         {
             const float minSize = 48;
@@ -518,6 +402,10 @@ namespace EnhancedIMGUI
                 rect.width = Screen.width - minSize;
         }
 
+        /// <summary>
+        ///     Ends drawn windows.
+        /// </summary>
+        /// <remarks>Called right after the OnEnhancedGUI method.</remarks>
         internal static void EndWindows()
         {
             Profiler.BeginSample("ImGui.EndWindows");
@@ -528,11 +416,13 @@ namespace EnhancedIMGUI
                 Renderer.Windows = newWindows.ToArray();
             }
 
-            //Debug.Log($"ending windows while windows index was " + Renderer.WindowsIndex);
             Renderer.WindowsIndex = 0;
             Profiler.EndSample();
         }
 
+        /// <summary>
+        ///     Get rect for next window.
+        /// </summary>
         internal static Rect NextWindow(string name, ref bool isActive, out int depth, out string guid)
         {
             EnhancedGUIWindow window;
@@ -558,12 +448,14 @@ namespace EnhancedIMGUI
                 Renderer.WindowsIndex++;
             }
 
-            // Debug.Log($"newst window was " + WindowsIndex);
             depth = window.Depth;
             guid = window.Guid;
             return window.Rect;
         }
 
+        /// <summary>
+        ///     Push window rect and state.
+        /// </summary>
         internal static void PushWindow(Rect rect, Rect header, Rect content, Rect resize, bool isActive)
         {
             var i = Renderer.WindowsIndex - 1;
@@ -579,16 +471,14 @@ namespace EnhancedIMGUI
             Renderer.Windows[i].IsActive = isActive;
         }
 
+        /// <summary>
+        ///     Push depth of currently drawn window to top.
+        /// </summary>
         internal static void PushDepth()
         {
             var i = Renderer.WindowsIndex - 1;
             if (i >= Renderer.Windows.Length)
-            {
-                // Debug.LogError($"cant push depth for {i}");
                 return;
-            }
-
-            // Debug.Log("pushing depth for " + i, Renderer);
 
             if (Renderer.Windows[i].Depth == 0)
                 return; // already on top
@@ -599,11 +489,26 @@ namespace EnhancedIMGUI
             Renderer.Windows[i].Depth = 0;
         }
 
+        /// <summary>
+        ///     Checks if any control can be currently drawn.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"/>
         internal static void CheckControlDraw()
         {
             if (!Renderer.CanDrawControl)
                 throw new InvalidOperationException("You are trying to draw control outside a window.");
         }
+
+        /// <summary>
+        ///     Get ID of last control.
+        /// </summary>
+        internal static int GetControlId(string hint) => GUIUtility.GetControlID(hint.GetHashCode(), FocusType.Keyboard, GUILayoutUtility.GetLastRect()) + 1;
+
+        /// <summary>
+        ///     It checks if current depth is equals zero.
+        /// </summary>
+        /// <remarks>User can only interact with currently rendered controls if depth is set to zero (on top of all).</remarks>
+        internal static bool CanInteract() => GUI.depth == 0;
 
         /// <summary>
         ///     Width of next drawn control.
@@ -625,22 +530,10 @@ namespace EnhancedIMGUI
         /// </summary>
         public static bool DrawControlId { get; set; } = false;
 
-        internal static int GetControlId(string hint)
-        {     
-            return GUIUtility.GetControlID(hint.GetHashCode(), FocusType.Keyboard, GUILayoutUtility.GetLastRect()) + 1;
-        }
-
-        /// <summary>
-        ///     User can only interact with currently rendered controls if depth is set to zero (on top of all).
-        ///     It checks if current depth is equals zero.
-        /// </summary>
-        internal static bool CanInteract() => GUI.depth == 0;
-
+        /// <summary/>
         internal static EnhancedGUIWindow LastWindow { get; set; }
-        internal static EnhancedGUIRenderer Renderer { get; set; }
 
-        private static readonly Dictionary<int, string> NumberFields = new Dictionary<int, string>();
-        private static string _nextNumberField;
-        private static string _selectedNumberField;
+        /// <summary/>
+        internal static EnhancedGUIRenderer Renderer { get; set; }
     }
 }

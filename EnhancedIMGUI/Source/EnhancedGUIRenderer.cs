@@ -47,9 +47,17 @@ namespace EnhancedIMGUI
 
         private void RenderImage()
         {
+            if (EnhancedGUIManager.Instance == null)
+            {
+                Debug.LogError("No EnhancedGUIManager Instance found! Make sure that EnhancedIMGUIManager prefab is always on scene.", this);
+                enabled = false;
+                return;
+            }
+
             Profiler.BeginSample("EnhancedGUIRenderer.RenderImage", this);
             ImGui.Renderer = this;
-            ImGui.ApplyStyle();
+            // apply default style just for sure
+            ImGui.StyleColorsDark();
             DrawEnhancedGUI();
             ImGui.EndWindows();
             ImGui.Renderer = null;
@@ -103,7 +111,10 @@ namespace EnhancedIMGUI
                 Windows[index].Depth = Windows[index].Depth + 1;
         }
 
-        internal static bool TestRaycast(Vector2 mousePosition, [NotNull] Func<EnhancedGUIWindow, Rect> getScreen,
+        /// <summary>
+        ///     Run raycast test for window at given point on the screen.
+        /// </summary>
+        internal static bool TestRaycast(Vector2 screenPoint, [NotNull] Func<EnhancedGUIWindow, Rect> getScreen,
             out EnhancedGUIWindow window)
         {
             if (getScreen == null) throw new ArgumentNullException(nameof(getScreen));
@@ -118,7 +129,7 @@ namespace EnhancedIMGUI
             foreach (var s in sorted)
             {
                 var screen = getScreen.Invoke(s);
-                if (!screen.Contains(mousePosition)) continue;
+                if (!screen.Contains(screenPoint)) continue;
                 window = s;
                 break;
             }
