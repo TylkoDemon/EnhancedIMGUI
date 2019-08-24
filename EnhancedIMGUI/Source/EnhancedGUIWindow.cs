@@ -14,10 +14,9 @@ namespace EnhancedIMGUI
         public string Name { get; }
         public Rect Rect { get; set; }
         public Rect Header { get; set; }
-        public Rect Content { get; set; }
-        public Rect Resize { get; set; }
         public int Depth { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsContentActive { get; set; }
+        public bool IsWindowOpen { get; set; }
 
         public EnhancedGUIWindow(string guid, string name)
         {
@@ -25,10 +24,9 @@ namespace EnhancedIMGUI
             Name = name;
             Rect = default(Rect);
             Header = default(Rect);
-            Content = default(Rect);
-            Resize = default(Rect);
             Depth = 0;
-            IsActive = false;
+            IsContentActive = false;
+            IsWindowOpen = false;
         }
     }
 }

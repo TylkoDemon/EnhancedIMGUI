@@ -22,10 +22,30 @@ namespace EnhancedIMGUI
         /// <summary>
         ///     Begins new window area.
         /// </summary>
-        public static int Begin(string windowName, ref bool isActive)
+        public static void Begin(string windowName)
+        {
+            var isWindowActive = true;
+            Begin(windowName, ref isWindowActive, false);
+        }
+
+        /// <summary>
+        ///     Begins new window area.
+        /// </summary>
+        public static void Begin(string windowName, ref bool isWindowOpen)
+        {
+            Begin(windowName, ref isWindowOpen, true);
+        }
+
+        /// <summary>
+        ///     Begins new window area.
+        /// </summary>
+        public static void Begin(string windowName, ref bool isWindowOpen, bool canDeactivate)
         {
             if (!Renderer.CanBeginWindow)
                 throw new InvalidOperationException("You are calling Begin() without first ending previous window by calling End().");
+
+            Renderer.CanDrawControl = true;
+            Renderer.CanBeginWindow = false;
 
             //
             // CONST
@@ -37,31 +57,53 @@ namespace EnhancedIMGUI
             // INIT
             //
             var pushDepth = false;
-            var originalRect = NextWindow(windowName, ref isActive, out var depth, out var guid);
+            var originalRect = NextWindow(windowName, out bool isContentActive, out bool isWindowOpen2, out var depth, out var guid);
             var pushingRect = new Rect(originalRect);
             var header = new Rect(originalRect.x, originalRect.y, originalRect.width, headerHeight);
             GUI.depth = depth;
             var enabled = GUI.depth == 0;
 
+            if (!isWindowOpen)
+            {
+                _nextWindowIsInactive = true;
+
+                if (isWindowOpen2)
+                {
+                    // need to save last window state here to be able to restore rect in next activation
+                    EnhancedGUISave.ApplyWindowOnce(windowName, originalRect, isContentActive);
+                }
+
+                PushWindow(pushingRect, header, isContentActive, false);
+                return;
+            }
+
             //
             // DRAW: HEADER
             //
 
-            var headerStyle = isActive ? Renderer.ActiveSkin.Header : Renderer.ActiveSkin.HeaderClosed;
+            var headerStyle = isContentActive ? Renderer.ActiveSkin.Header : Renderer.ActiveSkin.HeaderClosed;
             if (!enabled)
-                headerStyle = isActive ? Renderer.ActiveSkin.HeaderInactive : Renderer.ActiveSkin.HeaderInactiveClosed;
+                headerStyle = isContentActive ? Renderer.ActiveSkin.HeaderInactive : Renderer.ActiveSkin.HeaderInactiveClosed;
 
             GUILayout.BeginArea(header, headerStyle);
             {
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(
-                    (isActive ? EnhancedGUISkin.DownwardsArrowChar : EnhancedGUISkin.RightwardsArrowChar).ToString(),
-                    isActive ? Renderer.ActiveSkin.FoldoutClose : Renderer.ActiveSkin.FoldoutOpen))
+                    (isContentActive ? EnhancedGUISkin.DownwardsArrowChar : EnhancedGUISkin.RightwardsArrowChar).ToString(),
+                    isContentActive ? Renderer.ActiveSkin.FoldoutClose : Renderer.ActiveSkin.FoldoutOpen))
                 {
-                    isActive = !isActive;
+                    isContentActive = !isContentActive;
                 }
 
                 GUILayout.Label(windowName, Renderer.ActiveSkin.HeaderText);
+                GUILayout.FlexibleSpace();
+                if (canDeactivate)
+                {
+                    if (GUILayout.Button("X", Renderer.ActiveSkin.HeaderClose))
+                    {
+                        isWindowOpen = false;
+                    }
+                }
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
@@ -70,7 +112,14 @@ namespace EnhancedIMGUI
             // TEST RAYCAST: Test what window is on top.
             //
             var e = Event.current;
-            EnhancedGUIRenderer.TestRaycast(e.mousePosition, window => window.IsActive ? window.Rect : window.Header, out var hit);
+            EnhancedGUIRenderer.TestRaycast(e.mousePosition, window => window.IsContentActive ? window.Rect : window.Header, out var hit);
+            if (hit.Name == windowName)
+            {
+                if (!enabled && e.type == EventType.MouseDown)
+                {
+                    pushDepth = true;
+                }
+            }
 
             //
             // INPUT: Window movement.
@@ -119,8 +168,8 @@ namespace EnhancedIMGUI
             var windowRect = new Rect(originalRect.x,
                 originalRect.y + header.height,
                 originalRect.width,
-                isActive ? originalRect.height - header.height : 0);
-            GUILayout.BeginArea(windowRect, isActive ? Renderer.ActiveSkin.Window : Renderer.ActiveSkin.Hidden);
+                isContentActive ? originalRect.height - header.height : 0);
+            GUILayout.BeginArea(windowRect, isContentActive ? Renderer.ActiveSkin.Window : Renderer.ActiveSkin.Hidden);
             // GUILayout.Label($"{GUI.depth}, {guid}");
 
             //
@@ -181,14 +230,9 @@ namespace EnhancedIMGUI
             }
 
             if (pushDepth) PushDepth();
-            PushWindow(pushingRect, header, windowRect, resizeButton, isActive);
+            PushWindow(pushingRect, header, isContentActive, true);
 
             GUI.enabled = enabled;
-
-            Renderer.CanDrawControl = true;
-            Renderer.CanBeginWindow = false;
-
-            return Renderer.WindowsIndex;
         }
 
         /// <summary>
@@ -203,7 +247,10 @@ namespace EnhancedIMGUI
             Renderer.CanBeginWindow = true;
 
             GUI.enabled = true;
-            GUILayout.EndArea();
+            if (!_nextWindowIsInactive)
+                GUILayout.EndArea();
+
+            _nextWindowIsInactive = false;
         }
 
         /// <summary>
@@ -211,7 +258,7 @@ namespace EnhancedIMGUI
         /// </summary>
         public static void Text(string str)
         {
-            CheckControlDraw();
+            if (!CheckControlDraw()) return;
             GUILayout.Label(str);
         }
 
@@ -220,7 +267,7 @@ namespace EnhancedIMGUI
         /// </summary>
         public static bool Button(string str)
         {
-            CheckControlDraw();
+            if (!CheckControlDraw()) return false;
             var controlId = GetControlId(nameof(Button));
 
             GUI.SetNextControlName(controlId.ToString());
@@ -272,7 +319,7 @@ namespace EnhancedIMGUI
         /// <remarks>Not fully implemented yet.</remarks>
         public static void ColorEdit4(string label, ref Color c)
         {
-            CheckControlDraw();
+            if (!CheckControlDraw()) return;
             var controlId1 = GetControlId(nameof(ColorEdit4) + "_0");
             var controlId2 = GetControlId(nameof(ColorEdit4) + "_1");
             var controlId3 = GetControlId(nameof(ColorEdit4) + "_2");
@@ -405,20 +452,24 @@ namespace EnhancedIMGUI
             }
 
             _frame++;
+            _nextWindowIsInactive = false;
             _isFirstRect = true;
         }
 
         /// <summary>
         ///     Get rect for next window.
         /// </summary>
-        internal static Rect NextWindow(string name, ref bool isActive, out int depth, out string guid)
+        internal static Rect NextWindow(string name, out bool isContentActive, out bool isWindowOpen, out int depth, out string guid)
         {
             EnhancedGUIWindow window;
             if (Renderer.WindowsIndex >= Renderer.Windows.Length)
             {
-                if (!EnhancedGUISave.GetWindowRect(name, out var rect, out bool active))
+                if (!EnhancedGUISave.GetWindowRect(name, out var rect, out var active))
+                {
                     rect = new Rect(LastWindow.Rect.x + 20f, LastWindow.Rect.y + 20f, 300f, 200f);
-                else isActive = active;
+                    isContentActive = true;
+                }
+                else isContentActive = active;
 
                 window = LastWindow = new EnhancedGUIWindow(Guid.NewGuid().ToString(), name)
                 {
@@ -434,10 +485,12 @@ namespace EnhancedIMGUI
             {
                 window = LastWindow = Renderer.Windows[Renderer.WindowsIndex];
                 Renderer.WindowsIndex++;
+                isContentActive = window.IsContentActive;
             }
 
             depth = window.Depth;
             guid = window.Guid;
+            isWindowOpen = window.IsWindowOpen;
 
             _isFirstRect = false;
             return window.Rect;
@@ -446,7 +499,7 @@ namespace EnhancedIMGUI
         /// <summary>
         ///     Push window rect and state.
         /// </summary>
-        internal static void PushWindow(Rect rect, Rect header, Rect content, Rect resize, bool isActive)
+        internal static void PushWindow(Rect rect, Rect header, bool isContentActive, bool isWindowOpen)
         {
             var i = Renderer.WindowsIndex - 1;
             if (i >= Renderer.Windows.Length)
@@ -456,9 +509,8 @@ namespace EnhancedIMGUI
 
             Renderer.Windows[i].Rect = rect;
             Renderer.Windows[i].Header = header;
-            Renderer.Windows[i].Content = content;
-            Renderer.Windows[i].Resize = resize;
-            Renderer.Windows[i].IsActive = isActive;
+            Renderer.Windows[i].IsContentActive = isContentActive;
+            Renderer.Windows[i].IsWindowOpen = isWindowOpen;
         }
 
         /// <summary>
@@ -509,16 +561,24 @@ namespace EnhancedIMGUI
         ///     Checks if any control can be currently drawn.
         /// </summary>
         /// <exception cref="InvalidOperationException"/>
-        internal static void CheckControlDraw()
+        internal static bool CheckControlDraw()
         {
             if (!Renderer.CanDrawControl)
                 throw new InvalidOperationException("You are trying to draw control outside a window.");
+
+            return !_nextWindowIsInactive;
         }
 
         /// <summary>
         ///     Get ID of last control.
         /// </summary>
-        internal static int GetControlId(string hint) => GUIUtility.GetControlID(hint.GetHashCode(), FocusType.Keyboard, GUILayoutUtility.GetLastRect()) + 1;
+        internal static int GetControlId(string hint)
+        {
+            if (_nextWindowIsInactive)
+                return -1;
+
+            return GUIUtility.GetControlID(hint.GetHashCode(), FocusType.Keyboard, GUILayoutUtility.GetLastRect()) + 1;
+        }
 
         /// <summary>
         ///     Checks is mouse is under last drawn control.
@@ -565,6 +625,7 @@ namespace EnhancedIMGUI
         private static Texture2D _cursorIcon;
         private static int _drawCursorIcon;
 
+        private static bool _nextWindowIsInactive = false;
         private static bool _isFirstRect = true;
         private static int _frame;
     }

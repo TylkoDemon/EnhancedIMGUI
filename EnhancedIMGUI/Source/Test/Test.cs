@@ -11,7 +11,6 @@ namespace EnhancedIMGUI.Test
     [DefaultExecutionOrder(10)]
     internal class Test : EnhancedGUIRenderer
     {
-        private bool _isActive1;
         private string _someStr1;
 
         private float _someFloat1;
@@ -31,7 +30,7 @@ namespace EnhancedIMGUI.Test
             ImGui.DrawControlId = true;
             ImGui.StyleColorsDark();
 
-            ImGui.Begin("Hello, EnhancedIMGUI!", ref _isActive1);
+            ImGui.Begin("Hello, EnhancedIMGUI!");
             {
                 ImGui.Text("Hello World!");
                 ImGui.Text($"Depth -> {GUI.depth}");
@@ -54,6 +53,7 @@ namespace EnhancedIMGUI.Test
                 ImGui.IntField("int2", ref _someInt2);
 
                 ImGui.Toggle("bool", ref _someBool1);
+                ImGui.Toggle("Another Window", ref Test2._isWindowActive1);
 
                 // ImGui.ColorEdit4("color4", ref _color1);
             }

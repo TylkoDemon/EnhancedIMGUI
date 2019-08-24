@@ -26,7 +26,7 @@ namespace EnhancedIMGUI
         {
             public string Name;
             public float X, Y, Width, Height;
-            public bool IsActive;
+            public bool IsContentActive;
 
             internal bool Ready = true;
         }
@@ -63,7 +63,7 @@ namespace EnhancedIMGUI
                 {
                     w.Ready = false;
                     r = new Rect(w.X, w.Y, w.Width, w.Height);
-                    isActive = w.IsActive;
+                    isActive = w.IsContentActive;
                     return true;
                 }
             }
@@ -103,11 +103,28 @@ namespace EnhancedIMGUI
                     data.Y = window.Rect.y;
                     data.Height = window.Rect.height;
                     data.Width = window.Rect.width;
-                    data.IsActive = window.IsActive;
+                    data.IsContentActive = window.IsContentActive;
                 }
             }
 
             File.WriteAllText(SaveFileName, JsonUtility.ToJson(Loaded, true));
+        }
+
+        internal static void ApplyWindowOnce(string name, Rect rect, bool content)
+        {
+            if (Loaded == null) Loaded = new EnhancedGUISave();
+            for (var index = 0; index < Loaded.Windows.Count; index++)
+            {
+                var w = Loaded.Windows[index];
+                if (w.Name == name) // TODO: Check for duplicates
+                {
+                    w.X = rect.x;
+                    w.Y = rect.y;
+                    w.Height = rect.height;
+                    w.Width = rect.width;
+                    w.IsContentActive = content;
+                }
+            }
         }
 
         /// <summary>

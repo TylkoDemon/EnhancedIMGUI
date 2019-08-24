@@ -34,6 +34,9 @@ namespace EnhancedIMGUI
         public GUIStyle HeaderInactive;
         public GUIStyle HeaderInactiveClosed;
         public GUIStyle HeaderText;
+        public GUIStyle HeaderClose;
+
+        [Space]
         public GUIStyle Window;
         public GUIStyle Resize;
 

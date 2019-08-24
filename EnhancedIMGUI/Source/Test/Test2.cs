@@ -11,14 +11,14 @@ namespace EnhancedIMGUI.Test
     [DefaultExecutionOrder(10)]
     internal class Test2 : EnhancedGUIRenderer
     {
-        private bool _isActive1;
+        internal static bool _isWindowActive1 = true;
         private string _someStr1;
 
         private void OnEnhancedGUI()
         {
             ImGui.StyleColorsDark();
 
-            ImGui.Begin("Hello Nr. 2, EnhancedIMGUI!", ref _isActive1);
+            ImGui.Begin("Hello Nr. 2, EnhancedIMGUI!", ref _isWindowActive1);
             ImGui.Text("Hello World!");
             if (ImGui.Button("Save"))
             {

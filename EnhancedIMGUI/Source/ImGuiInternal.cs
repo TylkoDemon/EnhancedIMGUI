@@ -17,7 +17,7 @@ namespace EnhancedIMGUI
         /// <summary/>
         internal static void ControlLabel(string str, int controlId)
         {
-            ImGui.CheckControlDraw();
+            if (!ImGui.CheckControlDraw()) return;
             if (ImGui.DrawControlId)
                 str += $" ({controlId})";
 
@@ -27,7 +27,7 @@ namespace EnhancedIMGUI
         /// <summary/>
         internal static void InternalToggle(int controlId, string label, ref bool b, float controlWidth)
         {
-            ImGui.CheckControlDraw();
+            if (!ImGui.CheckControlDraw()) return;
             GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
             GUILayout.FlexibleSpace();
             GUI.SetNextControlName(controlId.ToString());
@@ -40,7 +40,7 @@ namespace EnhancedIMGUI
         /// <summary/>
         internal static void InternalSlider(int controlId, string label, ref float f, float min, float max, bool fullNumbers, float controlWidth)
         {
-            ImGui.CheckControlDraw();
+            if (!ImGui.CheckControlDraw()) return;
             GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
             GUI.SetNextControlName(controlId.ToString());
             f = GUILayout.HorizontalSlider(f, min, max, GUILayout.Width(controlWidth));
@@ -56,7 +56,7 @@ namespace EnhancedIMGUI
         /// <summary/>
         internal static void InternalInputText(int controlId, string label, ref string input, float controlWidth)
         {
-            ImGui.CheckControlDraw();
+            if (!ImGui.CheckControlDraw()) return;
             var isLabel = !string.IsNullOrEmpty(label);
             if (isLabel)
                 GUILayout.BeginHorizontal(GUILayout.Width(controlWidth + LabelWidth), GUILayout.Height(ControlHeight));
@@ -81,11 +81,10 @@ namespace EnhancedIMGUI
         /// <summary/>
         internal static void InternalFloatField(int controlId, string label, ref float f, float controlWidth)
         {
+            if (!ImGui.CheckControlDraw()) return;
             const NumberStyles fieldStyle =
                 NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands;
             var cultureInfo = CultureInfo.InvariantCulture;
-
-            ImGui.CheckControlDraw();
             var originalStr = f.ToString(CultureInfo.InvariantCulture);
             InternalDoNumberField(label, controlId, ref originalStr, controlWidth, result =>
             {
@@ -103,10 +102,9 @@ namespace EnhancedIMGUI
         /// <summary/>
         internal static void InternalIntField(int controlId, string label, ref int i, float controlWidth)
         {
+            if (!ImGui.CheckControlDraw()) return;
             const NumberStyles fieldStyle = NumberStyles.Integer;
             var cultureInfo = CultureInfo.InvariantCulture;
-
-            ImGui.CheckControlDraw();
             var originalStr = i.ToString();
             InternalDoNumberField(label, controlId, ref originalStr, controlWidth, result =>
             {
