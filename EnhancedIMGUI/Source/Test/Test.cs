@@ -34,6 +34,7 @@ namespace EnhancedIMGUI.Test
             ImGui.Begin("Hello, EnhancedIMGUI!", ref _isActive1);
             {
                 ImGui.Text("Hello World!");
+                ImGui.Text($"Depth -> {GUI.depth}");
                 ImGui.SliderFloat("Controls Width", ref _controlsWidth, 100, 400);
                 ImGui.ControlWidth = _controlsWidth;
                 ImGui.SliderFloat("Label Width", ref _labelWidth, 10, 200);

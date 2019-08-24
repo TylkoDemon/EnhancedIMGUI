@@ -405,6 +405,7 @@ namespace EnhancedIMGUI
             }
 
             _frame++;
+            _isFirstRect = true;
         }
 
         /// <summary>
@@ -422,7 +423,7 @@ namespace EnhancedIMGUI
                 window = LastWindow = new EnhancedGUIWindow(Guid.NewGuid().ToString(), name)
                 {
                     Rect = rect,
-                    Depth = Renderer.WindowsIndex + 1
+                    Depth = _isFirstRect ? 0 : Renderer.WindowsIndex + 1
                 };
 
                 var list = new List<EnhancedGUIWindow>(Renderer.Windows) {window};
@@ -437,6 +438,8 @@ namespace EnhancedIMGUI
 
             depth = window.Depth;
             guid = window.Guid;
+
+            _isFirstRect = false;
             return window.Rect;
         }
 
@@ -562,6 +565,7 @@ namespace EnhancedIMGUI
         private static Texture2D _cursorIcon;
         private static int _drawCursorIcon;
 
+        private static bool _isFirstRect = true;
         private static int _frame;
     }
 }
