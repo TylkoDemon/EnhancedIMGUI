@@ -96,17 +96,18 @@ namespace EnhancedIMGUI
                 }
 
                 GUILayout.Label(windowName, Renderer.ActiveSkin.HeaderText);
-                GUILayout.FlexibleSpace();
-                if (canDeactivate)
-                {
-                    if (GUILayout.Button("X", Renderer.ActiveSkin.HeaderClose))
-                    {
-                        isWindowOpen = false;
-                    }
-                }
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
+
+            var headerClose = new Rect(header.x + header.width - header.height, header.y, header.height, header.height);
+            if (canDeactivate)
+            {
+                if (GUI.Button(headerClose, "X", Renderer.ActiveSkin.HeaderClose))
+                {
+                    isWindowOpen = false;
+                }
+            }
 
             //
             // TEST RAYCAST: Test what window is on top.
