@@ -30,6 +30,9 @@ namespace EnhancedIMGUI
 
         [Header("Enhanced Styles (Windows)")]
         public GUIStyle Header;
+        public GUIStyle HeaderClosed;
+        public GUIStyle HeaderInactive;
+        public GUIStyle HeaderInactiveClosed;
         public GUIStyle HeaderText;
         public GUIStyle Window;
         public GUIStyle Resize;

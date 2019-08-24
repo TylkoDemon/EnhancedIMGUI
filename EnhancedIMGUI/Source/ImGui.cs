@@ -46,7 +46,12 @@ namespace EnhancedIMGUI
             //
             // DRAW: HEADER
             //
-            GUILayout.BeginArea(header, Renderer.ActiveSkin.Header);
+
+            var headerStyle = isActive ? Renderer.ActiveSkin.Header : Renderer.ActiveSkin.HeaderClosed;
+            if (!enabled)
+                headerStyle = isActive ? Renderer.ActiveSkin.HeaderInactive : Renderer.ActiveSkin.HeaderInactiveClosed;
+
+            GUILayout.BeginArea(header, headerStyle);
             {
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(
@@ -242,7 +247,7 @@ namespace EnhancedIMGUI
         public static void SliderFloat(string label, ref float f, float min, float max) => ImGuiInternal.InternalSlider(GetControlId(nameof(SliderFloat)), label, ref f, min, max, false, ControlWidth);
         
         /// <summary>
-        ///     Draws a int slider.
+        ///     Draws a int32 slider.
         /// </summary>
         public static void SliderInt(string label, ref int i, int min, int max)
         {
@@ -252,12 +257,12 @@ namespace EnhancedIMGUI
         }
 
         /// <summary>
-        ///     Draws a Single field.
+        ///     Draws a float field.
         /// </summary>
         public static void FloatField(string label, ref float f) => ImGuiInternal.InternalFloatField(GetControlId(nameof(FloatField)), label, ref f, ControlWidth);
         
         /// <summary>
-        ///     Draws a Int32 field.
+        ///     Draws a int32 field.
         /// </summary>
         public static void IntField(string label, ref int i) => ImGuiInternal.InternalIntField(GetControlId(nameof(IntField)), label, ref i, ControlWidth);
 
