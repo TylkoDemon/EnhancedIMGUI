@@ -54,6 +54,7 @@ namespace EnhancedIMGUI.Test
 
                 ImGui.Toggle("bool", ref _someBool1);
                 ImGui.Toggle("Another Window", ref Test2._isWindowActive1);
+                ImGui.Toggle("IsContent of Test2 Drawn?", ref Test2._isWindowContentDrawn);
 
                 // ImGui.ColorEdit4("color4", ref _color1);
             }

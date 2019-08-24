@@ -366,6 +366,11 @@ namespace EnhancedIMGUI
         }
 
         /// <summary>
+        ///     Returns True if last window content is/or was drawn on screen.
+        /// </summary>
+        public static bool IsContentDrawn() => LastWindow.IsContentActive && LastWindow.IsWindowOpen;
+
+        /// <summary>
         ///     Apply currently active style.
         /// </summary>
         internal static void ApplyStyle()

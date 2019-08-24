@@ -12,6 +12,8 @@ namespace EnhancedIMGUI.Test
     internal class Test2 : EnhancedGUIRenderer
     {
         internal static bool _isWindowActive1 = true;
+        internal static bool _isWindowContentDrawn = false;
+
         private string _someStr1;
 
         private void OnEnhancedGUI()
@@ -25,6 +27,8 @@ namespace EnhancedIMGUI.Test
 
             }
             ImGui.InputText("string", ref _someStr1);
+
+            _isWindowContentDrawn = ImGui.IsContentDrawn();
             ImGui.End();
         }
     }
