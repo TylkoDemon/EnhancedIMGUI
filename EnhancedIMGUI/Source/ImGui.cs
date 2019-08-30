@@ -69,7 +69,7 @@ namespace EnhancedIMGUI
 
                 if (isWindowOpen2)
                 {
-                    // need to save last window state here to be able to restore rect in next activation
+                    // need to save last window state here to be able to restore rect for next activation
                     EnhancedGUISave.ApplyWindowOnce(windowName, originalRect, isContentActive);
                 }
 
@@ -88,14 +88,14 @@ namespace EnhancedIMGUI
             GUILayout.BeginArea(header, headerStyle);
             {
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button(
-                    (isContentActive ? EnhancedGUISkin.DownwardsArrowChar : EnhancedGUISkin.RightwardsArrowChar).ToString(),
-                    isContentActive ? Renderer.ActiveSkin.FoldoutClose : Renderer.ActiveSkin.FoldoutOpen))
+                var foldoutStyle = isContentActive ? Renderer.ActiveSkin.FoldoutClose : Renderer.ActiveSkin.FoldoutOpen;
+                if (GUILayout.Button((isContentActive ? EnhancedGUISkin.DownwardsArrowChar : EnhancedGUISkin.RightwardsArrowChar).ToString(), foldoutStyle))
                 {
                     isContentActive = !isContentActive;
                 }
 
-                GUILayout.Label(windowName, Renderer.ActiveSkin.HeaderText);
+                var windowNameWidth = canDeactivate ? header.width - headerHeight - foldoutStyle.fixedWidth - 5 : header.width - foldoutStyle.fixedWidth - 15;
+                GUILayout.Label(windowName, Renderer.ActiveSkin.HeaderText, GUILayout.Width(windowNameWidth));
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
