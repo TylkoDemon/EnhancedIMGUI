@@ -25,7 +25,7 @@ namespace EnhancedIMGUI
         public static void Begin(string windowName)
         {
             var isWindowActive = true;
-            Begin(windowName, ref isWindowActive, false);
+            InternalBegin(windowName, ref isWindowActive, false);
         }
 
         /// <summary>
@@ -33,13 +33,13 @@ namespace EnhancedIMGUI
         /// </summary>
         public static void Begin(string windowName, ref bool isWindowOpen)
         {
-            Begin(windowName, ref isWindowOpen, true);
+            InternalBegin(windowName, ref isWindowOpen, true);
         }
 
         /// <summary>
         ///     Begins new window area.
         /// </summary>
-        public static void Begin(string windowName, ref bool isWindowOpen, bool canDeactivate)
+        internal static void InternalBegin(string windowName, ref bool isWindowOpen, bool canDeactivate)
         {
             if (!Renderer.CanBeginWindow)
                 throw new InvalidOperationException("You are calling Begin() without first ending previous window by calling End().");
