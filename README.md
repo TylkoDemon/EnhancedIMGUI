@@ -12,6 +12,6 @@ You can learn more about `GUI.depth` [here](https://docs.unity3d.com/ScriptRefer
 
 ## Examples
 
-API Documentation can be found [here](https://alwaystoolate.com/overmodded/#/EnhancedIMGUI/API/type/objImGui)
+API Documentation coming soon.
 
 *(c) 2019 Adam Majcherek*
