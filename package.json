@@ -1,0 +1,12 @@
+{
+    "name": "com.tylkodemon.enhancedimgui",
+    "displayName": "Enhanced IMGUI",
+    "version": "1.0.0",
+    "unity": "2019.2",
+    "description": "Enhanced IMGUI is a small extension for UnityEngine that improves build-in IMGUI system to look and work more like Dear ImGui",
+    "keywords": ["imgui", "jem"],
+    "category": "Utility",
+    "dependencies": {
+      "com.unity.ugui": "1.0.0"
+    }
+}
